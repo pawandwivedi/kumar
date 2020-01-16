@@ -130,6 +130,14 @@ additionalPrometheusRules:
           annotations:
             description: '{{$labels.instance}} has available entropy bits of {{ $value }} which is less than required of 300'
             summary: '{{$labels.instance}}: is low on entropy bits.'
+        - alert: node_entropy_available_low_cedric
+          expr: node_entropy_available_bits < 300
+          for: 5m
+          labels:
+            severity: page
+          annotations:
+            description: '{{$labels.instance}} has available entropy bits of {{ $value }} which is less than required of 300'
+            summary: '{{$labels.instance}}: is low on entropy bits.'
 ##
 global:
   rbac:
