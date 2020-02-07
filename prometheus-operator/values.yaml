@@ -397,7 +397,7 @@ alertmanager:
           storageClassName: standard
           resources:
             requests:
-              storage: 5Gi
+              storage: 7Gi
     #   selector: {}
 
 
