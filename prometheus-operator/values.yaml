@@ -193,18 +193,36 @@ alertmanager:
   config:
     global:
       resolve_timeout: 5m
+      slack_api_url: "https://hooks.slack.com/services/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"
     route:
       group_by: ['job']
       group_wait: 30s
       group_interval: 5m
       repeat_interval: 12h
-      receiver: 'null'
+#      receiver: 'null'
       routes:
       - match:
-          alertname: Watchdog
+          alertname: DeadMansSwitch
         receiver: 'null'
+      - match:
+        receiver: 'slack'
+        continue: true
     receivers:
     - name: 'null'
+    - name: 'slack'
+      slack_configs:
+      - channel: '#alertmanager-live'
+        send_resolved: false
+        title: '[{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] Monitoring Event Notification'
+        text: >-
+          {{ range .Alerts }}
+            *Alert:* {{ .Annotations.summary }} - `{{ .Labels.severity }}`
+            *Description:* {{ .Annotations.description }}
+            *Graph:* <{{ .GeneratorURL }}|:chart_with_upwards_trend:> *Runbook:* <{{ .Annotations.runbook }}|:spiral_note_pad:>
+            *Details:*
+            {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
+            {{ end }}
+          {{ end }}
 
   ## Pass the Alertmanager configuration directives through Helm's templating
   ## engine. If the Alertmanager configuration contains Alertmanager templates,
